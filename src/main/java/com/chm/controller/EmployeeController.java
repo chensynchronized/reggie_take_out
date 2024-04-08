@@ -70,7 +70,7 @@ public class EmployeeController {
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
-        Long id = Long.valueOf((String) request.getSession().getAttribute("employee"));
+        Long id = (Long) request.getSession().getAttribute("employee");
 
         employee.setUpdateUser(id);
         employee.setCreateUser(id);
@@ -88,6 +88,19 @@ public class EmployeeController {
         employeeService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
 
+    }
+    /*
+    * 根据员工id修改员工信息
+    * js只能保证Long类型的数据前16位数字是精确的，导致传递的id与数据的id不一致
+    * */
+    @PutMapping
+    public R<String> update(HttpServletRequest request,@RequestBody Employee employee){
+        log.info(employee.toString());
+        employee.setUpdateTime(LocalDateTime.now());
+        Long empId = (Long) request.getSession().getAttribute("employee");
+        employee.setUpdateUser(empId);
+        employeeService.updateById(employee);
+        return R.success("修改信息成功");
     }
 
 
